@@ -3,6 +3,52 @@ entries:
   che:
   - apiVersion: v1
     appVersion: 7.3.1
+    created: "2020-04-13T01:31:05.2347483+03:00"
+    dependencies:
+    - condition: cheDevfileRegistry.deploy
+      name: che-devfile-registry
+      repository: file://./custom-charts/che-devfile-registry/
+      version: 0.0.1
+    - condition: chePluginRegistry.deploy
+      name: che-plugin-registry
+      repository: file://./custom-charts/che-plugin-registry/
+      version: 0.0.1
+    - condition: global.multiuser
+      name: che-postgres
+      repository: file://./custom-charts/che-postgres/
+      version: 1.0.0
+    - condition: global.cheDedicatedKeycloak,global.multiuser
+      name: che-keycloak
+      repository: file://./custom-charts/che-keycloak/
+      version: 1.0.0
+    - condition: jaeger.deploy
+      name: che-jaeger
+      repository: file://./custom-charts/che-jaeger
+      version: 1.0.0
+    - condition: prometheus.deploy
+      name: prometheus
+      repository: https://kubernetes-charts.storage.googleapis.com/
+      version: ^7.4.5
+    - condition: grafana.deploy
+      name: grafana
+      repository: https://kubernetes-charts.storage.googleapis.com/
+      version: ^1.19.0
+    description: A Helm chart for deploying Eclipse Che to Kubernetes
+    digest: 5edb38e1661ce6148fa4ad4dd02b4428e14127614ecf10795ef25bd8fac59939
+    home: https://www.eclipse.org/che/
+    icon: https://www.eclipse.org/che/images/logo-eclipseche.svg
+    keywords:
+    - che
+    - eclipse
+    maintainers:
+    - email: ila-embsys@gmail.com
+      name: ila
+    name: che
+    urls:
+    - https://github.com/ila-embsys/charts/releases/download/che-0.1.6/che-0.1.6.tgz
+    version: 0.1.6
+  - apiVersion: v1
+    appVersion: 7.3.1
     created: "2020-04-06T14:27:24.092865951Z"
     dependencies:
     - condition: cheDevfileRegistry.deploy
