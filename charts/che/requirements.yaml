@@ -18,7 +18,7 @@ dependencies:
     condition: chePluginRegistry.deploy
   - name: che-postgres
     repository: file://./custom-charts/che-postgres/
-    version: 1.0.0
+    version: 1.0.1
     condition: global.multiuser
   - name: che-keycloak
     repository: file://./custom-charts/che-keycloak/
