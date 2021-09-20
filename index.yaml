@@ -1140,4 +1140,36 @@ entries:
     urls:
     - https://github.com/ila-embsys/charts/releases/download/sonatype-nexus-1.21.4/sonatype-nexus-1.21.4.tgz
     version: 1.21.4
+  zabbix:
+  - apiVersion: v2
+    appVersion: 5.4.1
+    created: "2021-09-20T14:40:31.906381136Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: ~10.3.6
+    description: Zabbix is a mature and effortless enterprise-class open source monitoring
+      solution for network monitoring and application monitoring of millions of metrics.
+    digest: 8101ac5891e8ea5daf11fc30691d8c12867cf43b096c9879228d35aa6cb6ca2a
+    home: https://www.zabbix.com/
+    icon: https://assets.zabbix.com/img/logo/zabbix_logo_500x131.png
+    keywords:
+    - zabbix
+    - monitoring
+    - metics
+    maintainers:
+    - email: amen.ayadi@cetic.be
+      name: AyadiAmen
+      url: https://github.com/AyadiAmen
+    - email: alexandre.nuttinck@cetic.be
+      name: alexnuttinck
+      url: https://github.com/alexnuttinck
+    - email: aeciopires@gmail.com
+      name: Aecio Pires
+      url: https://github.com/aeciopires
+    name: zabbix
+    urls:
+    - https://github.com/thirdpin/charts/releases/download/zabbix-0.3.3/zabbix-0.3.3.tgz
+    version: 0.3.3
 generated: "2020-01-14T15:47:11.357808095Z"
