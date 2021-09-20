@@ -4,7 +4,7 @@ Welcome to the oteemo charts repository. All charts are in the charts directory.
 
 ## Adding the chart Repository
 
-`helm repo add oteemocharts https://oteemo.github.io/charts`
+`helm repo add oteemocharts https://thirdpin.github.io/charts`
 
 ## Contributing
 
