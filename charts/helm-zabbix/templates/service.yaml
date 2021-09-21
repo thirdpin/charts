@@ -14,11 +14,9 @@ spec:
   ports:
     - port: 10051
       targetPort: 10051
-      nodePort: 10051
       name: zabbix-server
     - port: 10052
       targetPort: 10052
-      nodePort: 10052
       name: zabbix-jmx
     # - port: 161
     #   targetPort: 161
@@ -26,7 +24,6 @@ spec:
     #   name: zabbix-snmp
     - port: 162
       targetPort: 162
-      nodePort: 162
       protocol: UDP
       name: zabbix-snmp-trap
   selector:
