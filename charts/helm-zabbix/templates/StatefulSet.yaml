@@ -46,7 +46,7 @@ spec:
               hostIP: {{ .Values.zabbixServer.hostIP }}
               {{- end}}    
             - containerPort: 162
-              name: zabbix-snmp-trapper
+              name: zabbix-snmp-trap
               hostPort: 162
               protocol: UDP
           env:
