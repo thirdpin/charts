@@ -1,0 +1,63 @@
+# Default values for helm-zabbix.
+
+image:
+  pullPolicy: IfNotPresent
+
+ingress:
+  enabled: true
+  annotations: {}
+  hosts:
+  - host: www.example.com
+    secretName: www.example.com
+    paths:
+    - /
+  # tls:
+  #   - hosts:
+  #     - www.example.com
+  #     secretName: www.example.com
+
+zabbix:
+  version: 5.2-latest
+  database:
+    type: mysql
+    name: zabbix
+    host: mysql-8.default.svc.cluster.local
+  namespace: zabbix
+  networkPolicy:
+    enabled: true
+
+server:
+  enabled: true
+  database: {}
+  securityContext:
+    privileged: true
+    runAsUser: 1997
+
+  snmptraps:
+    enabled: true
+  externalIPs: []
+  env: {}
+  volumes: []
+  volumeMounts: []
+
+web:
+  enabled: true
+  webserver: nginx
+  timezone: Europe/Riga
+  securityContext:
+    privileged: true
+    runAsUser: 1997
+
+agent:
+  enabled: true
+  securityContext:
+    privileged: true
+    runAsUser: 1997
+  server:
+    host: ''
+  timeout: 10
+  startagents: 3
+  passiveagent: true
+  volumes_host: true
+  volumes: []
+  volumeMounts: []

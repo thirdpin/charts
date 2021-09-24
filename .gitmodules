@@ -1,4 +1,0 @@
-[submodule "charts/zabbix-trap"]
-	path = charts/zabbix-trap
-	url = https://github.com/thirdpin/helm-zabbix.git
-	branch = master

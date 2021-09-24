@@ -1,0 +1,103 @@
+{{- if and .Values.agent.enabled -}}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: zabbix-agent
+  namespace: "{{ .Values.zabbix.namespace }}"
+  labels:
+    app: zabbix-agent
+spec:
+  updateStrategy:
+   type: RollingUpdate
+   rollingUpdate:
+    maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: zabbix-agent
+  template:
+    metadata:
+      labels:
+        name: zabbix-agent
+        app: zabbix-agent
+    spec:
+      # hostNetwork: true
+      containers:
+        - name: zabbix-agent
+          {{ if .Values.agent.image }}
+          image: "{{ .Values.agent.image }}"
+          {{ else }}
+          image: "zabbix/zabbix-agent:alpine-{{ if .Values.agent.version }}{{ .Values.agent.version }}{{- else }}{{ .Values.zabbix.version }}{{- end }}"
+          {{- end }}
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          resources:
+           limits:
+            cpu: 100m
+            memory: 54Mi
+           requests:
+            cpu: 100m
+            memory: 54Mi
+          ports:
+          - containerPort: 10050
+            name: zabbix-agent
+          env:
+          - name: ZBX_SERVER_HOST
+          {{- if .Values.agent.server.host }}
+            value: "{{ .Values.agent.server.host }}"
+          {{- else }}
+            value: "0.0.0.0/0,zabbix-server-0.{{ .Release.Namespace }}.svc"
+          {{- end }}
+          - name: ZBX_PASSIVE_ALLOW
+            value: "{{ .Values.agent.passiveagent }}"
+          - name: ZBX_STARTAGENTS
+            value: "{{ .Values.agent.startagents }}"
+          - name: ZBX_TIMEOUT
+            value: "{{ .Values.agent.timeout }}"
+          {{- range $key, $value := .Values.agent.env }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+          {{- end }}
+          securityContext:
+            privileged: {{ .Values.agent.securityContext.privileged }}
+            runAsUser: {{ .Values.agent.securityContext.runAsUser }}
+          {{- if or .Values.agent.volumes_host (gt (len .Values.agent.volumes) 0) }}
+          volumeMounts:
+          {{- end }}
+          {{- if .Values.agent.volumes_host }}
+            - name: hostfs-root-volume
+              mountPath: /hostfs
+            - name: hostfs-etc-volume
+              mountPath: /hostfs/etc
+            - name: hostfs-sys-volume
+              mountPath: /hostfs/sys
+            - name: hostfs-proc-volume
+              mountPath: /proc
+            - name: host-var-run-volume
+              mountPath: /var/run
+          {{- end }}
+          {{- if .Values.agent.volumeMounts }}
+            {{- toYaml .Values.agent.volumeMounts | nindent 12 }}
+          {{- end }}
+      {{- if or .Values.agent.volumes_host (gt (len .Values.agent.volumes) 0) }}
+      volumes:
+      {{- end }}
+      {{- if .Values.agent.volumes_host }}
+        - name: hostfs-root-volume
+          hostPath:
+            path: /
+        - name: hostfs-etc-volume
+          hostPath:
+            path: /etc
+        - name: hostfs-proc-volume
+          hostPath:
+            path: /proc
+        - name: hostfs-sys-volume
+          hostPath:
+            path: /sys
+        - name: host-var-run-volume
+          hostPath:
+            path: /var/run
+      {{- end }}
+      {{- if .Values.agent.volumes }}
+        {{- toYaml .Values.agent.volumes | nindent 8 }}
+      {{- end }}
+{{- end }}

@@ -1,0 +1,134 @@
+{{- if and .Values.server.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zabbix-server
+  namespace: "{{ .Values.zabbix.namespace }}"
+  labels:
+    app: zabbix-server
+spec:
+  replicas: 1
+  serviceName: zabbix-server
+  selector:
+    matchLabels:
+      app: zabbix-server
+  template:
+    metadata:
+      labels:
+        app: zabbix-server
+    spec:
+      containers:
+        - name: zabbix-server
+          {{ if .Values.server.image }}
+          image: "{{ .Values.server.image }}"
+          {{ else }}
+          image: "zabbix/zabbix-server-{{ .Values.zabbix.database.type }}:alpine-{{ if .Values.server.version }}{{ .Values.server.version }}{{- else }}{{ .Values.zabbix.version }}{{- end }}"
+          {{- end }}
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          ports:
+          - containerPort: 10051
+            protocol: TCP
+            name: zabbix-trapper
+          readinessProbe:
+            tcpSocket:
+              port: zabbix-trapper
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: zabbix-trapper
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          startupProbe:
+            tcpSocket:
+              port: zabbix-trapper
+            failureThreshold: 30
+            periodSeconds: 10
+          env:
+          {{- if eq .Values.zabbix.database.type "mysql" }}
+          - name: MYSQL_USER
+            valueFrom:
+             secretKeyRef:
+              name: server-db-secret
+              key: db-zbx-user
+          - name: MYSQL_PASSWORD
+            valueFrom:
+             secretKeyRef:
+              name: server-db-secret
+              key: db-zbx-pass
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+             secretKeyRef:
+              name: server-db-secret
+              key: db-root-pass
+          - name: MYSQL_DATABASE
+            value: "{{ .Values.zabbix.database.name }}"
+          {{- end }}
+          {{- if eq .Values.zabbix.database.type "pgsql" }}
+          - name: POSTGRES_USER
+            valueFrom:
+             secretKeyRef:
+              name: server-db-secret
+              key: db-zbx-user
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+             secretKeyRef:
+              name: server-db-secret
+              key: db-zbx-pass
+          - name: POSTGRES_PASSWORD_FILE
+            valueFrom:
+             secretKeyRef:
+              name: server-db-secret
+              key: db-root-pass
+          - name: POSTGRES_DB
+            value: "{{ .Values.zabbix.database.name }}"
+          {{- end }}
+          - name: DB_SERVER_HOST
+          {{- if .Values.server.database.host }}
+            value: "{{ .Values.server.database.host }}"
+          {{- else }}
+            value: "{{ .Values.zabbix.database.host }}"
+          {{- end }}
+          {{- range $key, $value := .Values.server.env }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+          {{- end }}
+          securityContext:
+            privileged: {{ .Values.server.securityContext.privileged }}
+            runAsUser: {{ .Values.server.securityContext.runAsUser }}
+          {{- if or .Values.server.snmptraps.enabled (gt (len .Values.server.volumeMounts) 0) }}
+          volumeMounts:
+          {{- end }}
+          {{- if .Values.server.snmptraps.enabled }}
+            - name: zabbix-db-storage
+              mountPath: /var/lib/zabbix/snmptraps/
+              readOnly: true
+          {{- end }}
+          {{- if .Values.server.volumeMounts }}
+            {{- toYaml .Values.server.volumeMounts | nindent 12 }}
+          {{- end }}
+        {{- if .Values.server.snmptraps.enabled }}
+        - name: zabbix-snmptraps
+          image: "zabbix/zabbix-snmptraps:alpine-{{ if .Values.server.version }}{{ .Values.server.version }}{{- else }}{{ .Values.zabbix.version }}{{- end }}"
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 1162
+            protocol: UDP
+            name: snmp-trap
+          volumeMounts:
+          - name: zabbix-db-storage
+            mountPath: /var/lib/zabbix/snmptraps/
+            readOnly: false
+        {{- end }}
+      {{- if or .Values.server.snmptraps.enabled (gt (len .Values.server.volumes) 0) }}
+      volumes:
+      {{- end }}
+      {{- if .Values.server.snmptraps.enabled }}
+        - hostPath:
+           path: /zabbix/
+          name: zabbix-db-storage
+      {{- if .Values.server.volumes }}
+        {{- toYaml .Values.server.volumes | nindent 8 }}
+      {{- end }}
+      {{- end }}
+{{- end }}
