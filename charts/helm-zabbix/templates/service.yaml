@@ -18,16 +18,28 @@ spec:
     - port: 10052
       targetPort: 10052
       name: zabbix-jmx
-    # - port: 161
-    #   targetPort: 161
-    #   protocol: UDP
-    #   name: zabbix-snmp
-    - port: 162
-      targetPort: 162
-      protocol: UDP
-      name: zabbix-snmp-trap
   selector:
     app: zabbix-server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zabbix-snmptraps
+  labels:
+    app: zabbix-snmptraps
+    app.kubernetes.io/name: zabbix-snmptraps
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: {{ .Release.Name | quote }}
+    heritage: {{ .Release.Service | quote }}
+spec:
+  type: {{ .Values.SNMPtraps.service.type }}
+  ports:
+    - port: 162
+      targetPort: 1162
+      protocol: UDP
+      name: "snmp-trap"
+  selector:
+    app: zabbix-snmptraps
 ---
   {{- if .Values.zabbixagent.enabled }}
 apiVersion: v1

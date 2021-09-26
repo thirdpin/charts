@@ -30,9 +30,24 @@ zabbixServer:
   POSTGRES_DB: "zabbix"
   service:
     # -- Type of service in Kubernetes cluster
-    type: NodePort
+    type: ClusterIP
     # -- Port of service in Kubernetes cluster
     port: 10051
+
+SNMPtraps:
+  # -- Number of replicas of ``zabbixServer`` module
+  replicaCount: 1
+  resources: {}
+  image:
+    # -- Docker image name
+    repositiry: zabbix/zabbix-snmptraps
+    # -- Tag of Docker image of Zabbix server
+    tag: ubuntu-5.4.1
+    # -- Pull policy of Docker image
+    pullPolicy: IfNotPresent
+    service:
+      # -- Type of service in Kubernetes cluster
+      type: NodePort
 
 # **PostgreSQL** configurations
 postgresql:

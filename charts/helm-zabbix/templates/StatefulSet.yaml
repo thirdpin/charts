@@ -45,10 +45,6 @@ spec:
               {{- if ne "0.0.0.0" .Values.zabbixServer.hostIP }}
               hostIP: {{ .Values.zabbixServer.hostIP }}
               {{- end}}    
-            - containerPort: 162
-              name: zabbix-snmp-trap
-              hostPort: 162
-              protocol: UDP
           env:
             - name: DB_SERVER_HOST
               value: {{ .Values.zabbixServer.DB_SERVER_HOST }}
@@ -61,7 +57,24 @@ spec:
 {{- range $item := .Values.zabbixServer.extraEnv }}
             - name: {{ $item.name }}
               value: {{ $item.value }}
+          volumeMounts:
+            - name: zabbix-snmptraps-storage
+              mountPath: /var/lib/zabbix/snmptraps/
+              readOnly: true
 {{- end }}
+        - name: zabbix-snmptraps
+          resources:
+{{- toYaml .Values.SNMPtraps.resources | nindent 12 }}
+          image: {{ .Values.SNMPtraps.image.repository }}:{{ .Values.SNMPtraps.image.tag }}
+          imagePullPolicy: {{ .Values.SNMPtraps.image.pullPolicy }}
+          ports:
+          - containerPort: 1162
+            protocol: UDP
+            name: snmp-trap
+          volumeMounts:
+          - name: zabbix-snmptraps-storage
+            mountPath: /var/lib/zabbix/snmptraps/
+            readOnly: false
           {{- if .Values.zabbixagent.enabled }}
         - name: zabbix-agent
           resources:
