@@ -35,19 +35,20 @@ zabbixServer:
     port: 10051
 
 SNMPtraps:
+  enabled: false
   # -- Number of replicas of ``zabbixServer`` module
   replicaCount: 1
   resources: {}
   image:
     # -- Docker image name
-    repositiry: zabbix/zabbix-snmptraps
+    repository: zabbix/zabbix-snmptraps
     # -- Tag of Docker image of Zabbix server
     tag: ubuntu-5.4.1
     # -- Pull policy of Docker image
     pullPolicy: IfNotPresent
-    service:
-      # -- Type of service in Kubernetes cluster
-      type: NodePort
+  service:
+    # -- Type of service in Kubernetes cluster
+    type: NodePort
 
 # **PostgreSQL** configurations
 postgresql:
@@ -194,7 +195,7 @@ zabbixweb:
   POSTGRES_DB: zabbix
   service:
     # -- Type of service for Zabbix web
-    type: NodePort
+    type: ClusterIP
     # -- Port to expose service
     port: 80
     # -- Port of application pod

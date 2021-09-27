@@ -17,7 +17,7 @@ spec:
   - port: 162
     targetPort: 1162
     protocol: UDP
-    name: "snmp-trap"
+    name: "snmp"
   {{- end }}
   selector:
     app: "zabbix-server"

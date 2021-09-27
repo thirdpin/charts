@@ -21,6 +21,7 @@ spec:
   selector:
     app: zabbix-server
 ---
+  {{- if .Values.SNMPtraps.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -28,18 +29,19 @@ metadata:
   labels:
     app: zabbix-snmptraps
     app.kubernetes.io/name: zabbix-snmptraps
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: {{ .Release.Name | quote }}
-    heritage: {{ .Release.Service | quote }}
+    helm.sh/chart: {{ include "zabbix.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}-snmptraps
+    app.kubernetes.io/managed-by: {{ .Release.Service }}-snmptraps
 spec:
   type: {{ .Values.SNMPtraps.service.type }}
   ports:
     - port: 162
       targetPort: 1162
       protocol: UDP
-      name: "snmp-trap"
+      name: zabbix-snmptraps
   selector:
     app: zabbix-snmptraps
+    {{- end }}
 ---
   {{- if .Values.zabbixagent.enabled }}
 apiVersion: v1
