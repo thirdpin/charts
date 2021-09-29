@@ -34,13 +34,15 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}-snmptraps
 spec:
   type: {{ .Values.SNMPtraps.service.type }}
+  externalIPs:
+    - 192.168.2.102
   ports:
-    - port: 162
-      targetPort: 1162
+    - port: 1162
+      nodePort: 31162
       protocol: UDP
       name: zabbix-snmptraps
   selector:
-    app: zabbix-snmptraps
+    app: zabbix-server
     {{- end }}
 ---
   {{- if .Values.zabbixagent.enabled }}
