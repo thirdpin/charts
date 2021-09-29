@@ -156,6 +156,11 @@ spec:
             {{- toYaml .Values.SNMPtraps.resources | nindent 12 }}
           image: "{{ .Values.SNMPtraps.image.repository }}:{{ .Values.SNMPtraps.image.tag }}"
           imagePullPolicy: {{ .Values.SNMPtraps.image.pullPolicy }}
+          # command:
+          #   - /bin/sh
+          #   - -cx
+          #   - chown zabbix:zabbix /var/lib/zabbix/snmptraps
+            # - chmod -R 777 /var/lib/zabbix/snmptraps
           ports:
           - containerPort: 1162
             protocol: UDP
@@ -164,10 +169,15 @@ spec:
           - name: zabbix-snmptraps-storage
             mountPath: /var/lib/zabbix/snmptraps/
             readOnly: false
-      volumes:
-        - hostPath:
-           path: /zabbix/
-          name: zabbix-snmptraps-storage
+  volumeClaimTemplates:
+    - metadata:
+        name: zabbix-snmptraps-storage
+      spec:
+        accessModes:
+          - ReadWriteMany
+        resources:
+          requests:
+            storage: 1Gi
         {{- end }}
       imagePullSecrets:
       {{- range .Values.zabbixServer.image.pullSecrets }}
