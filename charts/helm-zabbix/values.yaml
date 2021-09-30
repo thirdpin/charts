@@ -35,7 +35,7 @@ zabbixServer:
     port: 10051
 
 SNMPtraps:
-  enabled: false
+  enabled: true
   # -- Number of replicas of ``zabbixServer`` module
   replicaCount: 1
   resources: {}
