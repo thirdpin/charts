@@ -33,6 +33,41 @@ zabbixServer:
     type: ClusterIP
     # -- Port of service in Kubernetes cluster
     port: 10051
+  volume_snmp:
+      name: snmptraps
+      mountPath: /var/lib/zabbix/snmptraps
+      readOnly: false
+  volumeMounts:
+    - name: alertscripts
+      mountPath: /usr/lib/zabbix/alertscripts
+      readOnly: false
+    - name: externalscripts
+      mountPath: /usr/lib/zabbix/externalscripts
+      readOnly: false
+    - name: modules
+      mountPath: /var/lib/zabbix/modules
+      readOnly: false
+    - name: enc
+      mountPath: /var/lib/zabbix/enc
+      readOnly: false
+    - name: ssh-keys
+      mountPath: /var/lib/zabbix/ssh_keys
+      readOnly: false
+    - name: certs
+      mountPath: /var/lib/zabbix/ssl/certs
+      readOnly: false
+    - name: keys
+      mountPath: /var/lib/zabbix/ssl/keys
+      readOnly: false
+    - name: ssl-ca
+      mountPath: /var/lib/zabbix/ssl/ssl_ca
+      readOnly: false
+    - name: mibs
+      mountPath: /var/lib/zabbix/mibs
+      readOnly: false
+    - name: export
+      mountPath: /var/lib/zabbix/export
+      readOnly: false
 
 SNMPtraps:
   enabled: true

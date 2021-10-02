@@ -1,0 +1,27 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: "zabbix-{{ .Values.zabbixServer.volume_snmp.name }}"
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+
+{{- range $item := .Values.zabbixServer.volumeMounts }} 
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: "zabbix-{{ $item.name }}"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+{{- end }}
+

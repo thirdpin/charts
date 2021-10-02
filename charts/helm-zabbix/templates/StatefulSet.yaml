@@ -58,12 +58,15 @@ spec:
             - name: {{ $item.name }}
               value: {{ $item.value }}
 {{- end }}
-          {{- if .Values.SNMPtraps.enabled }}
           volumeMounts:
-            - name: zabbix-snmptraps-storage
-              mountPath: /var/lib/zabbix/snmptraps/
-              readOnly: true
-          {{- end }}
+{{- range $item := .Values.zabbixServer.volumeMounts }}          
+            - name: {{ $item.name }}
+              mountPath: {{ $item.mountPath }}
+              readOnly: {{ $item.readOnly }}
+{{- end }}    
+            - name: {{ .Values.zabbixServer.volume_snmp.name }}
+              mountPath: {{ .Values.zabbixServer.volume_snmp.mountPath }}
+              readOnly: {{ .Values.zabbixServer.volume_snmp.readOnly }}
         {{- if .Values.zabbixagent.enabled }}
         - name: zabbix-agent
           resources:
@@ -162,23 +165,23 @@ spec:
           #   - chown zabbix:zabbix /var/lib/zabbix/snmptraps
             # - chmod -R 777 /var/lib/zabbix/snmptraps
           ports:
-          - containerPort: 1162
-            protocol: UDP
-            name: snmpt
+            - containerPort: 1162
+              protocol: UDP
+              name: snmpt
           volumeMounts:
-          - name: zabbix-snmptraps-storage
-            mountPath: /var/lib/zabbix/snmptraps/
-            readOnly: false
-  volumeClaimTemplates:
-    - metadata:
-        name: zabbix-snmptraps-storage
-      spec:
-        accessModes:
-          - ReadWriteMany
-        resources:
-          requests:
-            storage: 1Gi
+            - name: {{ .Values.zabbixServer.volume_snmp.name }}
+              mountPath: {{ .Values.zabbixServer.volume_snmp.mountPath }}
+              readOnly: {{ .Values.zabbixServer.volume_snmp.readOnly }}
         {{- end }}
+      volumes:
+{{- range $item := .Values.zabbixServer.volumeMounts }} 
+        - name: {{ $item.name }}
+          persistentVolumeClaim:
+            claimName: "zabbix-{{ $item.name }}"
+{{- end }}
+        - name: {{ .Values.zabbixServer.volume_snmp.name }}
+          persistentVolumeClaim:
+            claimName: "zabbix-{{ .Values.zabbixServer.volume_snmp.name }}"
       imagePullSecrets:
       {{- range .Values.zabbixServer.image.pullSecrets }}
         - name: {{ . | quote }}
