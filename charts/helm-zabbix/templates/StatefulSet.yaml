@@ -54,6 +54,8 @@ spec:
               value: {{ .Values.zabbixServer.POSTGRES_PASSWORD }}
             - name: POSTGRES_DB
               value: {{ .Values.zabbixServer.POSTGRES_DB }}
+            - name: ZBX_ENABLE_SNMP_TRAPS
+              value: "true"
 {{- range $item := .Values.zabbixServer.extraEnv }}
             - name: {{ $item.name }}
               value: {{ $item.value }}

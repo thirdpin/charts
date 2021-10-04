@@ -11,12 +11,14 @@ metadata:
     heritage: {{ .Release.Service | quote }}
 spec:
   type: {{ .Values.zabbixServer.service.type }}
+  externalIPs:
+    - 192.168.2.102
   ports:
     - port: 10051
-      targetPort: 10051
+      nodePort: 31051
       name: zabbix-server
     - port: 10052
-      targetPort: 10052
+      nodePort: 31052
       name: zabbix-jmx
   selector:
     app: zabbix-server
